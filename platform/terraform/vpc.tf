@@ -23,7 +23,7 @@ resource "google_compute_router" "router" {
 }
 
 # Створимо Cloud NAT
-resource "google_compute_nat" "nat" {
+resource "google_compute_router_nat" "nat" {
   name                               = "k8s-nat"
   router                             = google_compute_router.router.name
   region                             = google_compute_router.router.region

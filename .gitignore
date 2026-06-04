@@ -80,3 +80,9 @@ desktop.ini
 
 # framework stubs (unused)
 next-env.d.ts
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
