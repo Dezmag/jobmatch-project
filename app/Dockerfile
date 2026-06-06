@@ -27,4 +27,4 @@ COPY skills ./skills
 EXPOSE 3001
 ENV NODE_ENV=production
 
-CMD ["node", "server/index.js"]
+CMD ["node", "server/server.js"]
