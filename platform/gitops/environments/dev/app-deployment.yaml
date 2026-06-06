@@ -24,15 +24,17 @@ spec:
               value: "production"
             # Сюди ми пізніше додамо секрети для AI моделей (Gemini/OpenAI)
 ---
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: jobmatch-service
   namespace: default
 spec:
-  type: ClusterIP # Внутрішній IP для безпеки додатка всередині кластера
+  type: LoadBalancer # Google Cloud автоматично дасть цьому сервісу постійну IP в інтернеті!
   ports:
     - port: 80
       targetPort: 3001
   selector:
     app: jobmatch-app
+
