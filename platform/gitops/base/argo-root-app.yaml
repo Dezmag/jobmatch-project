@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/Dezmag' # Твій репозиторій
+    repoURL: 'https://github.com/Dezmag/jobmatch-project.git' # Твій репозиторій
     targetRevision: HEAD # Стежимо за останньою версією в main
     path: platform/gitops/environments/dev # Вказуємо шлях до маніфестів DEV
   destination:
