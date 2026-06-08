@@ -22,7 +22,7 @@ ENV PORT=3001
 
 CMD ["npm", "run", "dev"]
 
-# --- Stage 3: Target Web (Фронтенд на Nginx) ---
+# --- Stage 3: Target Web (Фронтенд на Nginx) --
 FROM public.ecr.aws/docker/nginx:alpine AS web
 # Копіюємо зібраний фронтенд з Stage 1 в папку Nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
