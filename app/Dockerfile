@@ -1,31 +1,32 @@
-FROM public.ecr.aws/docker/library/node:20-alpine
-
+# --- Stage 1: Build Stage (Спільний для компіляції) ---
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 WORKDIR /app
-
-# Копіюємо конфіги з кореня папки app
-COPY package*.json ./
-COPY tsconfig*.json ./
+COPY package*.json tsconfig*.json ./
 RUN npm ci
-
-# Копіюємо весь інший код програми (включаючи src, server, skills)
 COPY . .
-
-# Збираємо фронтенд всередині образу (створює папку dist в корені)
 RUN npm run build
 
-# Переходимо в папку сервера та встановлюємо його залежності
+# --- Stage 2: Target API (Бекенд-сервер) ---
+FROM public.ecr.aws/docker/library/node:20-alpine AS api
+WORKDIR /app
+COPY package*.json tsconfig*.json ./
+RUN npm ci
+COPY . .
 WORKDIR /app/server
 RUN npm ci
-
-# КРИТИЧНО ВАЖЛИВИЙ DevOps-фікс: розкладаємо фронтенд туди, де його може шукати сервер
-RUN mkdir -p public dist && \
-    cp -r /app/dist/* ./public/ 2>/dev/null || true && \
-    cp -r /app/dist/* ./dist/ 2>/dev/null || true
 
 EXPOSE 3001
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3001
 
-# Запускаємо сервер через офіційний скрипт розробників
 CMD ["npm", "run", "dev"]
+
+# --- Stage 3: Target Web (Фронтенд на Nginx) ---
+FROM public.ecr.aws/docker/nginx:alpine AS web
+# Копіюємо зібраний фронтенд з Stage 1 в папку Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+# Копіюємо нашу конфіга проксі
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
