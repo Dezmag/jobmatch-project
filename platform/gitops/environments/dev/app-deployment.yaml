@@ -27,7 +27,7 @@ spec:
             - name: PORT
               value: "3001"
             - name: FORCE_UPDATE_TRIGGER
-              value: "v3" # Оновлений тригер для скидання кешу хмари
+              value: "v4" # Оновлений тригер для скидання кешу хмари
 ---
 apiVersion: v1
 kind: Service
