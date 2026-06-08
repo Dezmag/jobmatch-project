@@ -17,14 +17,17 @@ COPY server/ .
 FROM node:20-alpine
 WORKDIR /app
 
-
-COPY --from=backend-builder /build-server ./server
-
+# Копіюємо згенерований фронтенд у корінь для роздачі
 COPY --from=frontend-builder /build ./public 
-# Копируем AI-скиллы, которые запрашивает приложение
+# Копіюємо AI-скиллы
 COPY skills ./skills
+
+# Копіюємо бекенд і ПЕРЕХОДИМО в його папку для запуску
+COPY --from=backend-builder /build-server ./server
+WORKDIR /app/server
 
 EXPOSE 3001
 ENV NODE_ENV=production
 
-CMD ["node", "server/server.js"]
+# Запускаємо безпосередньо з папки сервера
+CMD ["node", "server.js"]
