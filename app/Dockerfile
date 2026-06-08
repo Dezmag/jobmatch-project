@@ -1,38 +1,24 @@
-# --- Stage 1: Build Frontend (Vite) ---
-FROM public.ecr.aws/docker/library/node:20-alpine AS frontend-builder
-WORKDIR /build
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+# Використовуємо офіційний стабільний образ Node.js з AWS дзеркала
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 
-# --- Stage 2: Build Backend API (TypeScript) ---
-FROM public.ecr.aws/docker/library/node:20-alpine AS backend-builder
-WORKDIR /build-server
-COPY server/package*.json ./
-RUN npm ci
-COPY server/ .
-# Додаємо оператор || true для обходу помилок типізації
-RUN npm run build --if-present || true
-
-
-# --- Stage 3: Production Image ---
-FROM public.ecr.aws/docker/library/node:20-alpine
 WORKDIR /app
 
-# Копіюємо згенерований фронтенд
-COPY --from=frontend-builder /build/dist ./public 
-# Копіюємо AI-скиллы
-COPY skills ./skills
+# Копіюємо конфіги з кореня папки app
+COPY package*.json ./
+COPY tsconfig*.json ./
+RUN npm ci
 
-# Копіюємо бекенд разом із згенерованою папкою dist та node_modules
-COPY --from=backend-builder /build-server ./server
+# Копіюємо весь інший код програми (включаючи src, server, skills)
+COPY . .
+
+# Переходимо в папку сервера та встановлюємо його власні залежності
+WORKDIR /app/server
+RUN npm ci
 
 EXPOSE 3001
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3001
 
-WORKDIR /app/server
-
-CMD ["npm", "start"]
+# Запускаємо сервер напряму через ts-node (інструмент запуску TypeScript без компіляції)
+CMD ["npx", "ts-node", "server.ts"]
