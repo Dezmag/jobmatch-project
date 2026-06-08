@@ -16,14 +16,18 @@ spec:
       containers:
         - name: app
           image: ghcr.io/dezmag/jobmatch-project/job-match-app:latest
-          imagePullPolicy: Always # Примусово качати новий образ з GitHub!
+          imagePullPolicy: Always # Наказуємо завжди качати свіжий образ з GitHub
           ports:
             - containerPort: 3001
           env:
             - name: NODE_ENV
               value: "production"
-            - name: RESTART_VERSION
-              value: "v2" # Цей рядок змусить Kubernetes скинути старий кеш поду!
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "3001"
+            - name: FORCE_UPDATE_TRIGGER
+              value: "v3" # Оновлений тригер для скидання кешу хмари
 ---
 apiVersion: v1
 kind: Service
