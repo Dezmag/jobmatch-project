@@ -6,28 +6,27 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# --- Stage 2: Build Backend API (Node.js) ---
+# --- Stage 2: Build Backend API ---
 FROM node:20-alpine AS backend-builder
 WORKDIR /build-server
-COPY server/package*.json ./
+# Копіюємо конфіги бекенду з кореня папки app
+COPY package*.json ./
+COPY tsconfig*.json ./
 RUN npm ci
-COPY server/ .
+# Копіюємо весь інший код програми
+COPY . .
 
 # --- Stage 3: Production Image ---
 FROM node:20-alpine
 WORKDIR /app
 
-# Копіюємо згенерований фронтенд у корінь для роздачі
-COPY --from=frontend-builder /build ./public 
-# Копіюємо AI-скиллы
-COPY skills ./skills
-
-# Копіюємо бекенд і ПЕРЕХОДИМО в його папку для запуску
-COPY --from=backend-builder /build-server ./server
-WORKDIR /app/server
+# Копіюємо всі залежності та вихідний код з Stage 2
+COPY --from=backend-builder /build-server ./
 
 EXPOSE 3001
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3001
 
-# Запускаємо безпосередньо з папки сервера
-CMD ["node", "server.js"]
+# Запускаємо через офіційний скрипт додатка, прописаний у package.json
+CMD ["npm", "run", "start:api"]
