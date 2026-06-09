@@ -1,0 +1,18 @@
+[
+  {
+    "id": "case_01",
+    "description": "Валідація відповідності досвіду кандидату (Frontend)",
+    "resume": "React, TypeScript, Redux Toolkit, 3 роки досвіду. Пишу чистий код.",
+    "vacancy": "Шукаємо Frontend Developer. Стек: React, TS. Досвід від 2 років.",
+    "expected_match": true,
+    "forbidden_keywords": ["Python", "Java", "Data Science"]
+  },
+  {
+    "id": "case_02",
+    "description": "Невідповідність вимогам Senior вакансії",
+    "input_resume": "Студент, знання HTML/CSS та базовий JavaScript, шукаю першу роботу.",
+    "input_vacancy": "Lead Frontend Architect. Обов'язковий досвід архітектури від 6 років.",
+    "expected_match": false,
+    "forbidden_keywords": ["Senior", "Lead", "Architect"]
+  }
+]
