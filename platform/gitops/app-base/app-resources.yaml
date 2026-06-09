@@ -33,10 +33,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jobmatch-service # Ця назва жорстко прописана в nginx.conf!
+  name: jobmatch-service # Ця назва жорстко використовується всередині nginx.conf
   namespace: default
 spec:
-  type: ClusterIP # Внутрішній IP, бекенд більше не світиться в інтернет відкритим
+  type: ClusterIP # Приватний IP, бекенд надійно схований всередині кластера
   ports:
     - port: 80
       targetPort: 3001
@@ -75,7 +75,7 @@ metadata:
   name: jobmatch-web-service
   namespace: default
 spec:
-  type: LoadBalancer # Оцієї permanent IP-адресою ми будемо відкривати САЙТ
+  type: LoadBalancer # Цей сервіс дивиться в інтернет і дає нам постійну IP сайту
   ports:
     - port: 80
       targetPort: 80
