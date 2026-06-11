@@ -1,18 +1,29 @@
 [
   {
-    "id": "case_01",
-    "description": "Валідація відповідності досвіду кандидату (Frontend)",
-    "resume": "React, TypeScript, Redux Toolkit, 3 роки досвіду. Пишу чистий код.",
-    "vacancy": "Шукаємо Frontend Developer. Стек: React, TS. Досвід від 2 років.",
+    "id": "skill_search_jobs",
+    "description": "Тест скіла пошуку вакансій за семантичним матчингом",
+    "skill_type": "search-jobs",
+    "resume": "DevOps Engineer, Kubernetes, Terraform, GCP",
+    "vacancy": "Шукаємо Cloud SRE інженера з досвідом K8s",
     "expected_match": true,
-    "forbidden_keywords": ["Python", "Java", "Data Science"]
+    "forbidden_keywords": ["Junior", "Intern"]
   },
   {
-    "id": "case_02",
-    "description": "Невідповідність вимогам Senior вакансії",
-    "input_resume": "Студент, знання HTML/CSS та базовий JavaScript, шукаю першу роботу.",
-    "input_vacancy": "Lead Frontend Architect. Обов'язковий досвід архітектури від 6 років.",
+    "id": "skill_tailor_cv",
+    "description": "Тест скіла адаптації резюме під вимоги вакансії",
+    "skill_type": "tailor-cv",
+    "resume": "Знаю базовий Python та Django",
+    "vacancy": "Senior Python Architect. FastAPI, AWS, System Design",
     "expected_match": false,
-    "forbidden_keywords": ["Senior", "Lead", "Architect"]
+    "forbidden_keywords": ["Senior", "Architect"]
+  },
+  {
+    "id": "skill_draft_cover_letter",
+    "description": "Тест скіла генерації супровідного листа",
+    "skill_type": "draft-cover-letter",
+    "resume": "QA Automation, Java, Selenium",
+    "vacancy": "QA Engineer",
+    "expected_match": true,
+    "forbidden_keywords": ["C#", "Python"]
   }
 ]

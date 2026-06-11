@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "job-boards-crawler": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/app/skills"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "interview-simulator": {
+      "command": "node",
+      "path": "/app/server/agent/tools/interview-tool.js",
+      "description": "Протокол для інтерактивної симуляції технічного інтерв'ю на основі вимог вакансії"
+    }
+  }
+}

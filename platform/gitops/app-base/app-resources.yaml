@@ -29,6 +29,8 @@ spec:
               value: "0.0.0.0"
             - name: PORT
               value: "3001"
+            - name: VECTOR_DB_URL
+              value: "http://cluster.local"  
 ---
 apiVersion: v1
 kind: Service
@@ -81,3 +83,40 @@ spec:
       targetPort: 80
   selector:
     app: jobmatch-web
+---
+# ==========================================
+# 3. ВЕКТОРНА БАЗА ДАНИХ (QDRANT FOR MEMORY)
+# ==========================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobmatch-vector-db
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobmatch-vector-db
+  template:
+    metadata:
+      labels:
+        app: jobmatch-vector-db
+    spec:
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:latest
+          ports:
+            - containerPort: 6333
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant-service
+  namespace: default
+spec:
+  type: ClusterIP # Приватний внутрішній порт для безпеки
+  ports:
+    - port: 6333
+      targetPort: 6333
+  selector:
+    app: jobmatch-vector-db
