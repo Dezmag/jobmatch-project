@@ -5,12 +5,36 @@ on:
     branches: [ main ]
     paths:
       - 'app/**'
+      - 'evals/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'app/skills/**'
+      - 'evals/**'
 
 jobs:
-  build-and-push:
+  # КРОК 1: Прогін автоматичних тестів промптів з нашої нової папки evals
+  run-ai-evals:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Запускаємо наш скрипт тестування промптів перед будь-якою збіркою Docker
+      - name: Run LLMOps Evaluation Suite
+        run: |
+          node evals/run-evals.js
+
+  # КРОК 2: Твоя стабільна збірка (запуститься ТІЛЬКИ якщо тести ШІ пройшли успішно)
+  build-and-push:
+    needs: run-ai-evals
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
@@ -19,7 +43,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Критично важливий DevOps-крок: переводимо назву в нижній регістр
       - name: Downcase repository name
         run: |
           echo "IMAGE_REPOSITORY=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -31,7 +54,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Збірка та пуш БЕКЕНДУ (API) з маленької літери
       - name: Build and push API Image
         uses: docker/build-push-action@v5
         with:
@@ -40,7 +62,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/job-match-api:latest
 
-      # Збірка та пуш ФРОНТЕНДУ (Web) з маленької літери
       - name: Build and push Web Image
         uses: docker/build-push-action@v5
         with:
