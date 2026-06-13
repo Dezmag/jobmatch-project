@@ -18,12 +18,21 @@
     "forbidden_keywords": ["Senior", "Architect"]
   },
   {
-    "id": "skill_draft_cover_letter",
-    "description": "Тест скіла генерації супровідного листа",
-    "skill_type": "draft-cover-letter",
-    "resume": "QA Automation, Java, Selenium",
-    "vacancy": "QA Engineer",
-    "expected_match": true,
-    "forbidden_keywords": ["C#", "Python"]
+    "id": "infra_tool_call_parsing",
+    "description": "Integration: Перевірка правильного парсингу tool-calls від моделі",
+    "skill_type": "integration-tool-call",
+    "resume": "test-resume",
+    "vacancy": "test-vacancy",
+    "raw_ai_output": "{\"tool_calls\": [{\"name\": \"job-boards-crawler\", \"args\": {\"query\": \"DevOps\"}}]}",
+    "expected_tool": "job-boards-crawler"
+  },
+  {
+    "id": "infra_retry_on_500_error",
+    "description": "Unit: Перевірка логіки Retry/Timeout при збої API ШІ (500 Error)",
+    "skill_type": "unit-resilience-retry",
+    "resume": "test-resume",
+    "vacancy": "test-vacancy",
+    "simulate_api_fail_count": 2,
+    "expected_final_status": "success"
   }
 ]
