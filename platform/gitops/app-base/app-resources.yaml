@@ -178,7 +178,6 @@ spec:
                 secretKeyRef:
                   name: llm-provider-secrets
                   key: api-key
-  
 ---
 apiVersion: v1
 kind: Service
