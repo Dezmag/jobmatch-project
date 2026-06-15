@@ -24,7 +24,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+      - name: Run FinOps Automated Calculator
+        run: |
+          node evals/finops-calc.js
       # Запускаємо наш скрипт тестування промптів перед будь-якою збіркою Docker
       - name: Run LLMOps Evaluation Suite
         run: |
