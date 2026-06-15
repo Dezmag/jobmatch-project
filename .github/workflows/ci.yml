@@ -35,7 +35,7 @@ jobs:
         run: |
           node evals/finops-calc.js
 
-      # Хмара сама комітить оновлений файл AI_PROVIDERS.md назад у твій Git
+      # Хмара сама комітить оновлений файл AI_PROVIDERS.md назад у Git
       - name: Commit and Push updated AI_PROVIDERS.md
         run: |
           git config --global user.name "github-actions[bot]"
