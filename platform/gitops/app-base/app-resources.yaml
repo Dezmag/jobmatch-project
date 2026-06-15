@@ -31,6 +31,10 @@ spec:
               value: "3001"
             - name: VECTOR_DB_URL
               value: "http://cluster.local"  
+            - name: LLM_API_BASE_URL
+              value: "http://cluster.local"
+            - name: DATA_GOVERNANCE_MINIMIZATION
+              value: "true"  
 ---
 apiVersion: v1
 kind: Service
@@ -120,3 +124,85 @@ spec:
       targetPort: 6333
   selector:
     app: jobmatch-vector-db
+
+---
+
+# ==========================================
+# 4. AGENT GATEWAY (AI SECURITY & GUARDRAILS)
+# ==========================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-gateway
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-gateway
+  template:
+    metadata:
+      labels:
+        app: agent-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: agentgateway/gateway:latest
+          ports:
+            - containerPort: 8080
+          env:
+            # Посилання на секрет з API-ключем (вимога Secrets Management)
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llm-provider-secrets
+                  key: api-key
+            # Вмикаємо багатошаровий захист (Multi-layer Prompt & Output Guards)
+            - name: ENABLE_PROMPT_GUARDS
+              value: "true"
+            - name: FORBIDDEN_INPUT_KEYWORDS
+              value: "ignore previous instructions, system prompt, override"
+            - name: ENABLE_PII_MASKING
+              value: "true"
+            - name: ENABLE_OUTPUT_GUARDRAILS
+              value: "true"
+            - name: ALLOWED_TOOLS_LIST
+              value: "job-boards-crawler, interview-simulator"
+                        # Налаштування Multi-LLM провайдерів
+            - name: DEFAULT_MODEL_ROUTING
+              value: "gemini-3-flash"
+            - name: FALLBACK_MODEL_ROUTING
+              value: "claude-haiku-4.5,gpt-5.4"
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llm-provider-secrets
+                  key: api-key
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-gateway-service
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: agent-gateway
+---
+# ==========================================
+# 5. SECRETS MANAGEMENT (NO KEYS IN GIT)
+# ==========================================
+apiVersion: v1
+kind: Secret
+metadata:
+  name: llm-provider-secrets
+  namespace: default
+type: Opaque
+data:
+  # Ключ зашифрований або підставляється автоматично через Secret Manager / ESO
+  # Ніколи не пишіть сюди чистий текст!
+  api-key: dGhlLXNhbXBsZS1hcGkta2V5LWZvci1oYWNhdGhvbi1wcm90ZWN0ZWQ= # base64 placeholder
